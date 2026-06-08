@@ -44,7 +44,7 @@ body::before {
     background-image: url('/static/Sans_sprite.webp');
     background-repeat: no-repeat;
     background-position: left center;
-    background-size: 300px;
+    background-size: 700px;
     opacity: 0.1; /* muy poco visible */
     z-index: -1;
     pointer-events: none;
