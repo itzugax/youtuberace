@@ -23,10 +23,12 @@ async def autocomplete(q: str):
 
 @app.get("/api/random")
 async def get_random():
-    return {
-        "start": await youtube_service.get_random_video(),
-        "target": await youtube_service.get_random_video()
-    }
+    for _ in range(3):  # retry up to 3 times
+        start = await youtube_service.get_random_video()
+        target = await youtube_service.get_random_video()
+        if start and target and start["id"] != target["id"]:
+            return {"start": start, "target": target}
+    raise HTTPException(status_code=503, detail="No se pudo obtener videos aleatorios")
 
 class RecommendationRequest(BaseModel):
     id: str

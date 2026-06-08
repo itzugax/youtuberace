@@ -116,10 +116,20 @@ async function loadRandomVideos() {
     try {
         const response = await fetch('/api/random');
         const data = await response.json();
+
+        if (!data.start || !data.target) {
+            console.warn('Random API returned null, retrying...');
+            btn.textContent = '🎲 Aleatorio';
+            btn.disabled = false;
+            alert('No se pudo obtener un video aleatorio. Intenta de nuevo.');
+            return;
+        }
+
         selectVideo(data.start, 'start');
         selectVideo(data.target, 'target');
     } catch (error) {
         console.error('Error loading random videos:', error);
+        alert('Error al cargar videos aleatorios. Intenta de nuevo.');
     } finally {
         btn.textContent = '🎲 Aleatorio';
         btn.disabled = false;
