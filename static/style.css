@@ -362,10 +362,10 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     align-items: flex-start;
     animation: fadeIn 0.5s ease-out;
 }
-.main-column { flex: 1 1 auto; min-width: 0; max-width: 520px; }
+.main-column { flex: 0 0 520px; min-width: 0; max-width: 520px; }
 .side-column {
-    flex: 0 0 340px;
-    width: 340px;
+    flex: 0 0 280px;
+    width: 280px;
     background-color: var(--card-bg);
     border-radius: var(--radius-lg);
     padding: 1.2rem;
@@ -376,7 +376,12 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     border: 1px solid var(--border-color);
 }
 .side-column-left {
-    order: -1; /* force to the left */
+    order: -1;
+}
+/* Right recommendations column fills remaining space */
+.side-column:not(.side-column-left) {
+    flex: 1 1 auto;
+    width: auto;
 }
 .side-column::-webkit-scrollbar { width: 5px; }
 .side-column::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
