@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Race — by Ugax</title>
+    <meta name="description" content="Navega a través de las recomendaciones reales de YouTube hasta llegar al video destino. ¿Podrás llegar en pocos saltos?">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="container">
+            <header id="main-header">
+                <div class="logo-section">
+                    <h1>YouTube <span class="highlight">Race</span></h1>
+                    <p class="subtitle">Navega por las recomendaciones reales de YouTube hasta llegar al destino.</p>
+                </div>
+            </header>
+
+            <!-- PANTALLA DE CONFIGURACIÓN -->
+            <main id="setup-screen">
+                <div class="search-section">
+                    <div class="search-columns">
+                        <div class="input-group">
+                            <label><span class="label-icon">🚀</span> Video de Inicio</label>
+                            <div class="autocomplete-container">
+                                <input type="text" id="start-input" placeholder="Buscar video inicial..." autocomplete="off">
+                                <div class="suggestions" id="start-suggestions"></div>
+                            </div>
+                            <div class="selected-video" id="start-selected" style="display: none;">
+                                <img src="" alt="Thumbnail" class="selected-thumb">
+                                <div class="selected-info">
+                                    <div class="selected-title"></div>
+                                    <div class="selected-channel"></div>
+                                </div>
+                                <button class="clear-btn" onclick="clearSelection('start')">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="versus-divider">
+                            <div class="versus-line"></div>
+                            <span class="versus-text">VS</span>
+                            <div class="versus-line"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label><span class="label-icon">🎯</span> Video Destino</label>
+                            <div class="autocomplete-container">
+                                <input type="text" id="target-input" placeholder="Buscar video destino..." autocomplete="off">
+                                <div class="suggestions" id="target-suggestions"></div>
+                            </div>
+                            <div class="selected-video" id="target-selected" style="display: none;">
+                                <img src="" alt="Thumbnail" class="selected-thumb">
+                                <div class="selected-info">
+                                    <div class="selected-title"></div>
+                                    <div class="selected-channel"></div>
+                                </div>
+                                <button class="clear-btn" onclick="clearSelection('target')">✕</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-row">
+                        <button id="random-btn" class="btn-secondary">🎲 Aleatorio</button>
+                        <button id="start-game-btn" class="btn-primary" disabled>¡EMPEZAR!</button>
+                    </div>
+                </div>
+
+                <div class="how-to-play">
+                    <h3>¿Cómo jugar?</h3>
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <p>Elige un video de <strong>inicio</strong> y un video <strong>destino</strong></p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <p>Navega solo usando las <strong>recomendaciones reales</strong> de YouTube</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <p>Intenta llegar al destino en el <strong>menor número de saltos</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- PANTALLA DE JUEGO -->
+            <main id="game-screen" style="display: none;">
+                <div class="game-header">
+                    <div class="target-reminder">
+                        <span class="label">🎯 OBJETIVO:</span>
+                        <div class="target-card">
+                            <img id="game-target-thumb" src="" alt="Target">
+                            <div class="target-info">
+                                <div id="game-target-title" class="target-title"></div>
+                                <div id="game-target-channel" class="target-channel"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-panel">
+                            <div class="stat-box">
+                                <span class="stat-value" id="hop-counter">0</span>
+                                <span class="stat-label">Saltos</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-value" id="time-counter" style="color: #ffd600; text-shadow: 0 0 10px rgba(255, 214, 0, 0.35);">00:00</span>
+                                <span class="stat-label">Tiempo</span>
+                            </div>
+                        <button id="give-up-btn" class="btn-giveup" onclick="confirmGiveUp()">🏳️ Rendirse</button>
+                    </div>
+                </div>
+
+                <div class="game-content-layout">
+                    <div class="main-column">
+                        <div class="current-step-section">
+                            <div class="current-video-card" id="current-video-card">
+                                <div class="video-player-container">
+                                    <div id="glitch-overlay" class="glitch-overlay"></div>
+                                    <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                                <div class="current-info">
+                                    <div id="current-video-title" class="current-title"></div>
+                                    <div id="current-video-channel" class="current-channel"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="path-history">
+                            <h3>📍 Tu recorrido</h3>
+                            <div id="path-visualizer" class="path-visualizer"></div>
+                        </div>
+                    </div>
+
+                    <div class="side-column">
+                        <div class="recommendations-section">
+                            <h2>⬇️ Siguiente salto</h2>
+                            <div id="loading-recs" class="loading-container" style="display: none;">
+                                <div class="spinner"></div>
+                                <p>Cargando recomendaciones reales...</p>
+                            </div>
+                            <div id="recommendations-list" class="recommendations-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- MODAL DE CONFIRMACIÓN -->
+            <div id="confirm-modal" class="modal-overlay" style="display: none;">
+                <div class="modal-box">
+                    <div class="modal-icon">🏳️</div>
+                    <h2>¿Rendirse?</h2>
+                    <p>¿Estás seguro de que quieres abandonar la partida?</p>
+                    <div class="modal-buttons">
+                        <button class="btn-secondary" onclick="closeModal()">Seguir jugando</button>
+                        <button class="btn-danger" onclick="giveUp()">Sí, me rindo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA DE VICTORIA -->
+            <main id="win-screen" style="display: none;">
+                <div class="end-container win">
+                    <div class="end-icon">🎉</div>
+                    <h1>¡HAS <span class="highlight">GANADO</span>!</h1>
+                    <p class="end-subtitle">Llegaste en <strong id="win-hops" class="highlight">0</strong> saltos y <strong id="win-time" style="color: #ffd600;">00:00</strong> de tiempo.</p>
+                    <div class="final-path">
+                        <h3>Tu ruta final:</h3>
+                        <div id="win-path-visualizer" class="path-visualizer"></div>
+                    </div>
+                    <button onclick="location.reload()" class="btn-primary">JUGAR OTRA VEZ</button>
+                </div>
+            </main>
+
+            <!-- PANTALLA DE RENDICIÓN -->
+            <main id="surrender-screen" style="display: none;">
+                <div class="end-container surrender">
+                    <div class="end-icon">😔</div>
+                    <h1>Te has <span class="highlight">rendido</span></h1>
+                    <p class="end-subtitle">Duraste <strong id="surrender-hops" class="highlight">0</strong> saltos y <strong id="surrender-time" style="color: #ffd600;">00:00</strong> de tiempo antes de abandonar.</p>
+
+                    <div class="surrender-endpoints">
+                        <div class="surrender-endpoint">
+                            <span class="endpoint-label">INICIO</span>
+                            <div class="endpoint-card">
+                                <img id="surrender-start-thumb" src="">
+                                <div id="surrender-start-title" class="endpoint-title"></div>
+                            </div>
+                        </div>
+                        <div class="surrender-arrow">✕</div>
+                        <div class="surrender-endpoint">
+                            <span class="endpoint-label">META</span>
+                            <div class="endpoint-card">
+                                <img id="surrender-target-thumb" src="">
+                                <div id="surrender-target-title" class="endpoint-title"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="final-path">
+                        <h3>Tu recorrido hasta abandonar:</h3>
+                        <div id="surrender-path-visualizer" class="path-visualizer"></div>
+                    </div>
+
+                    <button onclick="location.reload()" class="btn-primary mt-2">JUGAR OTRA VEZ</button>
+                </div>
+            </main>
+        </div>
+
+        <footer class="site-footer">
+            <div class="footer-content">
+                <span>© 2026 <strong>Ugax</strong>. Todos los derechos reservados.</span>
+                <span class="footer-separator">·</span>
+                <span>Powered by YouTube Data API</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
