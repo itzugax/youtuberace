@@ -362,11 +362,10 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     align-items: flex-start;
     animation: fadeIn 0.5s ease-out;
 }
-.main-column { flex: 1 1 65%; min-width: 0; }
+.main-column { flex: 1 1 auto; min-width: 0; }
 .side-column {
-    flex: 1 1 35%;
-    min-width: 280px;
-    max-width: 400px;
+    flex: 0 0 280px;
+    width: 280px;
     background-color: var(--card-bg);
     border-radius: var(--radius-lg);
     padding: 1.2rem;
@@ -375,7 +374,9 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     max-height: calc(100vh - 110px);
     overflow-y: auto;
     border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+}
+.side-column-left {
+    order: -1; /* force to the left */
 }
 .side-column::-webkit-scrollbar { width: 5px; }
 .side-column::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
@@ -524,10 +525,9 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 
 /* ========== PATH HISTORY ========== */
 .path-history {
-    background-color: var(--card-bg);
-    padding: 1.2rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
+    padding: 0;
+    border: none;
+    background: none;
 }
 .path-history h3 {
     font-size: 0.8rem;
@@ -539,9 +539,8 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 }
 .path-visualizer {
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    flex-wrap: wrap; /* WRAP INSTEAD OF SCROLL */
+    flex-direction: column;
+    gap: 0.5rem;
     padding-bottom: 0.5rem;
 }
 
@@ -549,20 +548,25 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     background-color: var(--card-bg-light);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    width: 110px;
-    flex-shrink: 0;
+    width: 100%;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem;
 }
-.mini-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+.mini-card img { width: 60px; flex-shrink: 0; aspect-ratio: 16/9; object-fit: cover; display: block; border-radius: 4px; }
 .mini-card .title {
-    font-size: 0.7rem;
-    padding: 0.4rem;
+    font-size: 0.75rem;
+    font-family: 'Roboto', sans-serif;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--text-secondary);
+    flex: 1;
+    min-width: 0;
 }
-.path-arrow { color: var(--accent-red); font-size: 1rem; flex-shrink: 0; }
+.path-arrow { color: var(--accent-red); font-size: 0.8rem; flex-shrink: 0; text-align: center; width: 100%; }
 
 /* ========== RECOMMENDATIONS ========== */
 .recommendations-section h2 {
@@ -784,7 +788,7 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     .versus-divider { flex-direction: row; padding-top: 0; }
     .versus-line { width: 40px; height: 2px; }
     .game-content-layout { flex-direction: column; }
-    .side-column { width: 100%; max-width: none; position: static; max-height: none; }
+    .side-column, .side-column-left { width: 100%; flex: none; position: static; max-height: none; order: 0; }
     .steps-grid { grid-template-columns: 1fr; }
 }
 
