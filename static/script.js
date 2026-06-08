@@ -27,7 +27,7 @@ function setupAutocomplete(type) {
         clearTimeout(debounceTimer);
         const query = e.target.value;
         
-        if (query.length < 3) {
+        if (query.length < 2) {
             suggestions.style.display = 'none';
             return;
         }
@@ -71,7 +71,7 @@ function renderSuggestions(data, type) {
             <img src="${video.thumb}" alt="thumb" class="suggestion-thumb">
             <div class="suggestion-info">
                 <div class="suggestion-title">${video.title}</div>
-                <div class="suggestion-channel">${video.channel}</div>
+                <div class="suggestion-channel">${video.channel}${video.date ? ' · ' + video.date : ''}</div>
             </div>
         `;
         item.addEventListener('click', () => selectVideo(video, type));

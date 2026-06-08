@@ -151,7 +151,7 @@ def _parse_recommendations(data: dict, current_video_id: str):
     return videos
 
 
-async def search_videos(query: str, limit: int = 10):
+async def search_videos(query: str, limit: int = 20):
     """
     Busca videos usando youtubesearchpython (NO consume cuota de API).
     Se usa para el autocomplete y el botón aleatorio.
@@ -166,12 +166,14 @@ async def search_videos(query: str, limit: int = 10):
             thumb_url = thumbs[-1]["url"] if thumbs else f"https://img.youtube.com/vi/{item['id']}/hqdefault.jpg"
             
             channel_name = item.get("channel", {}).get("name", "YouTube")
+            published = item.get("publishedTime", "")
             
             videos.append({
                 "id": item["id"],
                 "title": item["title"],
                 "channel": channel_name,
-                "thumb": thumb_url
+                "thumb": thumb_url,
+                "date": published
             })
         return videos
     except Exception as e:
