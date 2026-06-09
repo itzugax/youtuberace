@@ -436,6 +436,12 @@ function showWinScreen() {
     playWinSound();
     
     document.getElementById('game-screen').style.display = 'none';
+    
+    document.getElementById('win-start-thumb').src = state.start.thumb;
+    document.getElementById('win-start-title').textContent = state.start.title;
+    document.getElementById('win-target-thumb').src = state.target.thumb;
+    document.getElementById('win-target-title').textContent = state.target.title;
+    
     document.getElementById('win-screen').style.display = 'block';
     document.getElementById('win-hops').textContent = state.hops;
     document.getElementById('win-time').textContent = finalTime;
@@ -474,11 +480,13 @@ function giveUp() {
     
     document.getElementById('surrender-screen').style.display = 'block';
     
-    // Rellenar datos de rendición (updated above too)
-    document.getElementById('surrender-path-visualizer').innerHTML = '';
-    state.path.forEach(video => {
-        document.getElementById('surrender-path-visualizer').appendChild(createMiniCard(video));
-    });
+    // Rellenar datos de rendición
+    document.getElementById('surrender-start-thumb').src = state.start.thumb;
+    document.getElementById('surrender-start-title').textContent = state.start.title;
+    document.getElementById('surrender-target-thumb').src = state.target.thumb;
+    document.getElementById('surrender-target-title').textContent = state.target.title;
+    
+    renderPath('surrender-path-visualizer');
 }
 
 function timeOutGame() {
@@ -494,10 +502,7 @@ function timeOutGame() {
     document.getElementById('timeout-target-title').textContent = state.target.title;
     
     document.getElementById('timeout-screen').style.display = 'flex';
-    document.getElementById('timeout-path-visualizer').innerHTML = '';
-    state.path.forEach(video => {
-        document.getElementById('timeout-path-visualizer').appendChild(createMiniCard(video));
-    });
+    renderPath('timeout-path-visualizer');
 }
 
 async function loadDailyChallenge() {
