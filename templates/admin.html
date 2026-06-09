@@ -73,8 +73,14 @@
 
         async function saveDaily() {
             if (!token) return;
-            const startId = document.getElementById('start-id').value.trim();
-            const targetId = document.getElementById('target-id').value.trim();
+            
+            const extractId = (url) => {
+                const match = url.match(/[?&]v=([^&]+)/) || url.match(/youtu\.be\/([^?]+)/);
+                return match ? match[1] : url.trim();
+            };
+            
+            const startId = extractId(document.getElementById('start-id').value);
+            const targetId = extractId(document.getElementById('target-id').value);
             const msg = document.getElementById('panel-msg');
             msg.textContent = 'Guardando...';
             msg.className = '';
