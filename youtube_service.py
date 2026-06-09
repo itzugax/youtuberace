@@ -2,6 +2,7 @@ import os
 import json
 import random
 import urllib.request
+import httpx
 from dotenv import load_dotenv
 from youtubesearchpython import VideosSearch
 
