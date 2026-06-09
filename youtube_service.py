@@ -164,50 +164,47 @@ def _parse_recommendations(data: dict, current_video_id: str):
     return videos
 
 
+async def get_redis_client():
+    redis_url = os.environ.get("REDIS_URL")
+    if not redis_url:
+        return None
+    import redis.asyncio as redis
+    # If the URL is rediss:// we might need ssl_cert_reqs="none" for some free providers
+    client = redis.from_url(redis_url, decode_responses=True)
+    return client
+
 async def set_daily_challenge(start_id: str, target_id: str) -> bool:
-    url = os.environ.get("KV_REST_API_URL")
-    token = os.environ.get("KV_REST_API_TOKEN")
-    if not url or not token:
-        print("Faltan variables de entorno KV_REST_API_URL o KV_REST_API_TOKEN")
+    client = await get_redis_client()
+    if not client:
+        print("Falta la variable de entorno REDIS_URL")
         return False
     
     data = json.dumps({"start_id": start_id, "target_id": target_id})
     try:
-        async with httpx.AsyncClient() as client:
-            res = await client.post(
-                f"{url}/set/daily_challenge",
-                headers={"Authorization": f"Bearer {token}"},
-                json=data
-            )
-            return res.status_code == 200
+        await client.set("daily_challenge", data)
+        await client.aclose()
+        return True
     except Exception as e:
-        print(f"Error guardando reto diario: {e}")
+        print(f"Error guardando reto diario en Redis: {e}")
         return False
 
 async def get_daily_challenge():
-    url = os.environ.get("KV_REST_API_URL")
-    token = os.environ.get("KV_REST_API_TOKEN")
-    if not url or not token:
+    client = await get_redis_client()
+    if not client:
         return None
     
     try:
-        async with httpx.AsyncClient() as client:
-            res = await client.get(
-                f"{url}/get/daily_challenge",
-                headers={"Authorization": f"Bearer {token}"}
-            )
-            if res.status_code == 200:
-                result = res.json().get("result")
-                if result:
-                    # Parse the string back to JSON
-                    data = json.loads(result)
-                    start_info = await get_video_info(data["start_id"])
-                    target_info = await get_video_info(data["target_id"])
-                    if start_info and target_info:
-                        return {"start": start_info, "target": target_info}
-            return None
+        result = await client.get("daily_challenge")
+        await client.aclose()
+        if result:
+            data = json.loads(result)
+            start_info = await get_video_info(data["start_id"])
+            target_info = await get_video_info(data["target_id"])
+            if start_info and target_info:
+                return {"start": start_info, "target": target_info}
+        return None
     except Exception as e:
-        print(f"Error leyendo reto diario: {e}")
+        print(f"Error leyendo reto diario de Redis: {e}")
         return None
 
 async def get_video_info(video_id: str):
