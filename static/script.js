@@ -27,7 +27,7 @@ function setupAutocomplete(type) {
         clearTimeout(debounceTimer);
         const query = e.target.value;
         
-        if (query.length < 2) {
+        if (query.trim().length < 1) {
             suggestions.style.display = 'none';
             return;
         }
@@ -35,7 +35,7 @@ function setupAutocomplete(type) {
         suggestions.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);">Buscando...</div>';
         suggestions.style.display = 'block';
 
-        debounceTimer = setTimeout(() => fetchSuggestions(query, type), 500);
+        debounceTimer = setTimeout(() => fetchSuggestions(query.trim(), type), 250);
     });
 
     document.addEventListener('click', (e) => {

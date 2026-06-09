@@ -16,7 +16,7 @@ async def read_root(request: Request):
 
 @app.get("/api/autocomplete")
 async def autocomplete(q: str):
-    if len(q) < 3:
+    if len(q.strip()) < 1:
         return []
     results = await youtube_service.search_videos(q)
     return results

@@ -434,13 +434,14 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 }
 .target-info { min-width: 0; }
 .target-title {
-    font-weight: 600;
-    font-size: 0.85rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    font-family: 'Roboto', sans-serif;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.target-channel { font-size: 0.7rem; color: var(--text-muted); }
+.target-channel { font-size: 0.75rem; font-family: 'Roboto', sans-serif; color: var(--text-muted); }
 
 .stats-panel {
     display: flex;
@@ -716,49 +717,63 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.5rem;
     margin: 1.5rem 0;
+    flex-wrap: wrap;
 }
-.surrender-endpoint { text-align: center; }
+.surrender-endpoint { text-align: center; flex: 1; min-width: 140px; max-width: 220px; }
 .endpoint-label {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--accent-red);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: 0.5rem;
     display: block;
 }
 .endpoint-card img {
-    width: 140px;
+    width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
     border-radius: var(--radius-sm);
     margin-bottom: 0.5rem;
+    display: block;
 }
 .endpoint-title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    max-width: 160px;
-    white-space: nowrap;
+    font-size: 0.85rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
     overflow: hidden;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-align: left;
 }
 .surrender-arrow {
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: var(--text-muted);
-    font-weight: 900;
+    flex-shrink: 0;
 }
 
-.solution-section {
-    background: var(--bg-color);
+.final-path {
+    background-color: var(--bg-color);
+    padding: 1.2rem;
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin: 2rem 0;
+    margin: 1.5rem 0;
+    text-align: left;
 }
-.solution-section h3 {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+.final-path h3 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.8rem;
+}
+.path-visualizer-end {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
 }
 
 /* ========== FOOTER ========== */
