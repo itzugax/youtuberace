@@ -38,6 +38,10 @@ async function loadFromSeedURL() {
         if (startVideo && targetVideo) {
             selectVideo(startVideo, 'start');
             selectVideo(targetVideo, 'target');
+            // Auto start the game if seed is provided
+            setTimeout(() => {
+                startGame();
+            }, 500);
         }
     } catch (e) {
         console.warn('Could not load seed from URL:', e);

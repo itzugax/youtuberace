@@ -683,12 +683,14 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 .end-container {
     text-align: center;
     background-color: var(--card-bg);
-    padding: 3rem 2rem;
+    padding: 2rem;
     border-radius: var(--radius-xl);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-lg);
     animation: zoomIn 0.5s ease-out;
-    max-width: 800px;
+    max-width: 860px;
+    max-height: 90vh;
+    overflow-y: auto;
     margin: 0 auto;
 }
 .end-container.win { border-color: var(--accent-red); box-shadow: 0 0 40px var(--accent-glow); }
@@ -701,17 +703,41 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 
 .final-path {
     background-color: var(--bg-color);
-    padding: 1.5rem;
+    padding: 1rem 1.2rem;
     border-radius: var(--radius-lg);
-    margin: 2rem 0;
+    margin: 1.5rem 0;
+    text-align: left;
+    min-width: 0;
+    overflow: hidden;
 }
 .final-path h3 {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
 }
+/* Horizontal scroll for path in end screens */
+.final-path .path-visualizer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    align-items: center;
+}
+.final-path .path-visualizer::-webkit-scrollbar { height: 4px; }
+.final-path .path-visualizer::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 4px; }
+/* mini-card horizontal in end screens */
+.final-path .mini-card {
+    flex-direction: column;
+    width: 100px;
+    flex-shrink: 0;
+    padding: 0;
+}
+.final-path .mini-card img { width: 100%; border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.final-path .mini-card .title { padding: 0.3rem 0.4rem; font-size: 0.65rem; white-space: nowrap; }
 
 .surrender-endpoints {
     display: flex;
@@ -755,25 +781,8 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     flex-shrink: 0;
 }
 
-.final-path {
-    background-color: var(--bg-color);
-    padding: 1.2rem;
-    border-radius: var(--radius-lg);
-    margin: 1.5rem 0;
-    text-align: left;
-}
-.final-path h3 {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.8rem;
-}
-.path-visualizer-end {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
+
+
 }
 
 /* ========== FOOTER ========== */

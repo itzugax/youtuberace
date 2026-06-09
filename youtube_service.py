@@ -88,6 +88,7 @@ def _parse_recommendations(data: dict, current_video_id: str):
                 title = meta.get("title", {}).get("content", "")
                 
                 channel = ""
+                date = ""
                 rows = (meta.get("metadata", {})
                            .get("contentMetadataViewModel", {})
                            .get("metadataRows", []))
@@ -95,6 +96,8 @@ def _parse_recommendations(data: dict, current_video_id: str):
                     parts = rows[0].get("metadataParts", [])
                     if parts:
                         channel = parts[0].get("text", {}).get("content", "")
+                        if len(parts) > 1:
+                            date = parts[1].get("text", {}).get("content", "")
                 
                 thumb = f"https://img.youtube.com/vi/{vid}/hqdefault.jpg"
                 ti = (lvm.get("contentImage", {})
@@ -109,7 +112,8 @@ def _parse_recommendations(data: dict, current_video_id: str):
                         "id": vid,
                         "title": title,
                         "channel": channel,
-                        "thumb": thumb
+                        "thumb": thumb,
+                        "date": date
                     })
                 continue
             
@@ -133,6 +137,13 @@ def _parse_recommendations(data: dict, current_video_id: str):
                 if "runs" in c:
                     channel = c["runs"][0].get("text", "")
                 
+                date = ""
+                d = cvr.get("publishedTimeText", {})
+                if "simpleText" in d:
+                    date = d["simpleText"]
+                elif "runs" in d:
+                    date = d["runs"][0].get("text", "")
+                
                 thumb = f"https://img.youtube.com/vi/{vid}/hqdefault.jpg"
                 thumbs = cvr.get("thumbnail", {}).get("thumbnails", [])
                 if thumbs:
@@ -143,7 +154,8 @@ def _parse_recommendations(data: dict, current_video_id: str):
                         "id": vid,
                         "title": title,
                         "channel": channel,
-                        "thumb": thumb
+                        "thumb": thumb,
+                        "date": date
                     })
     except Exception as e:
         print(f"Error parseando recomendaciones: {e}")
