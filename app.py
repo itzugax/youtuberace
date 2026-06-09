@@ -14,6 +14,41 @@ templates = Jinja2Templates(directory="templates")
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/admin")
+async def read_admin(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
+class LoginRequest(BaseModel):
+    password: str
+
+@app.post("/api/admin/login")
+async def admin_login(req: LoginRequest):
+    if req.password == "311009":
+        return {"token": "admin_ok_311009"}
+    raise HTTPException(status_code=401, detail="Invalid password")
+
+class DailyChallengeRequest(BaseModel):
+    start_id: str
+    target_id: str
+
+@app.post("/api/admin/daily")
+async def set_daily(req: DailyChallengeRequest, request: Request):
+    auth = request.headers.get("Authorization")
+    if not auth or auth != "Bearer admin_ok_311009":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    success = await youtube_service.set_daily_challenge(req.start_id, req.target_id)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to save to KV")
+    return {"status": "ok"}
+
+@app.get("/api/daily")
+async def get_daily():
+    data = await youtube_service.get_daily_challenge()
+    if not data:
+        raise HTTPException(status_code=404, detail="No daily challenge set")
+    return data
+
 @app.get("/api/autocomplete")
 async def autocomplete(q: str):
     if len(q.strip()) < 1:

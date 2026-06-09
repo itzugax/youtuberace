@@ -164,6 +164,52 @@ def _parse_recommendations(data: dict, current_video_id: str):
     return videos
 
 
+async def set_daily_challenge(start_id: str, target_id: str) -> bool:
+    url = os.environ.get("KV_REST_API_URL")
+    token = os.environ.get("KV_REST_API_TOKEN")
+    if not url or not token:
+        print("Faltan variables de entorno KV_REST_API_URL o KV_REST_API_TOKEN")
+        return False
+    
+    data = json.dumps({"start_id": start_id, "target_id": target_id})
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                f"{url}/set/daily_challenge",
+                headers={"Authorization": f"Bearer {token}"},
+                json=data
+            )
+            return res.status_code == 200
+    except Exception as e:
+        print(f"Error guardando reto diario: {e}")
+        return False
+
+async def get_daily_challenge():
+    url = os.environ.get("KV_REST_API_URL")
+    token = os.environ.get("KV_REST_API_TOKEN")
+    if not url or not token:
+        return None
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.get(
+                f"{url}/get/daily_challenge",
+                headers={"Authorization": f"Bearer {token}"}
+            )
+            if res.status_code == 200:
+                result = res.json().get("result")
+                if result:
+                    # Parse the string back to JSON
+                    data = json.loads(result)
+                    start_info = await get_video_info(data["start_id"])
+                    target_info = await get_video_info(data["target_id"])
+                    if start_info and target_info:
+                        return {"start": start_info, "target": target_info}
+            return None
+    except Exception as e:
+        print(f"Error leyendo reto diario: {e}")
+        return None
+
 async def get_video_info(video_id: str):
     """Obtiene info de un video por su ID (para cargar semillas desde URL)."""
     try:

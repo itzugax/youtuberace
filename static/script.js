@@ -5,7 +5,8 @@ let state = {
     path: [],
     hops: 0,
     startTime: null,
-    timerInterval: null
+    timerInterval: null,
+    timeLimit: 0
 };
 
 let debounceTimer;
@@ -186,9 +187,34 @@ function updateTimer() {
     if (!state.startTime) return;
     const now = Date.now();
     const diffSeconds = Math.floor((now - state.startTime) / 1000);
-    const mins = Math.floor(diffSeconds / 60).toString().padStart(2, '0');
-    const secs = (diffSeconds % 60).toString().padStart(2, '0');
-    document.getElementById('time-counter').textContent = `${mins}:${secs}`;
+    const counterEl = document.getElementById('time-counter');
+
+    if (state.timeLimit > 0) {
+        const remaining = state.timeLimit - diffSeconds;
+        if (remaining <= 0) {
+            counterEl.textContent = "00:00";
+            timeOutGame();
+            return;
+        }
+        
+        if (remaining <= 30) {
+            counterEl.style.color = "var(--accent-red)";
+            counterEl.style.animation = "pulse 1s infinite";
+        } else {
+            counterEl.style.color = "#ffd600";
+            counterEl.style.animation = "none";
+        }
+
+        const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
+        const secs = (remaining % 60).toString().padStart(2, '0');
+        counterEl.textContent = `${mins}:${secs}`;
+    } else {
+        const mins = Math.floor(diffSeconds / 60).toString().padStart(2, '0');
+        const secs = (diffSeconds % 60).toString().padStart(2, '0');
+        counterEl.textContent = `${mins}:${secs}`;
+        counterEl.style.color = "#ffd600";
+        counterEl.style.animation = "none";
+    }
 }
 
 function startGame() {
@@ -198,9 +224,13 @@ function startGame() {
     state.path = [state.start];
     state.hops = 0;
     
+    // Configurar tiempo
+    const timeLimitSelect = document.getElementById('time-limit');
+    state.timeLimit = timeLimitSelect ? parseInt(timeLimitSelect.value) : 0;
+    
     // Start Timer
     state.startTime = Date.now();
-    document.getElementById('time-counter').textContent = "00:00";
+    updateTimer();
     if (state.timerInterval) clearInterval(state.timerInterval);
     state.timerInterval = setInterval(updateTimer, 1000);
 
@@ -445,10 +475,51 @@ function giveUp() {
     document.getElementById('surrender-screen').style.display = 'block';
     
     // Rellenar datos de rendición (updated above too)
-    document.getElementById('surrender-start-thumb').src = state.start.thumb;
-    document.getElementById('surrender-start-title').textContent = state.start.title;
-    document.getElementById('surrender-target-thumb').src = state.target.thumb;
-    document.getElementById('surrender-target-title').textContent = state.target.title;
+    document.getElementById('surrender-path-visualizer').innerHTML = '';
+    state.path.forEach(video => {
+        document.getElementById('surrender-path-visualizer').appendChild(createMiniCard(video));
+    });
+}
+
+function timeOutGame() {
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    document.getElementById('game-screen').style.display = 'none';
     
-    renderPath('surrender-path-visualizer');
+    document.getElementById('timeout-hops').textContent = state.hops;
+    
+    document.getElementById('timeout-start-thumb').src = state.start.thumb;
+    document.getElementById('timeout-start-title').textContent = state.start.title;
+    
+    document.getElementById('timeout-target-thumb').src = state.target.thumb;
+    document.getElementById('timeout-target-title').textContent = state.target.title;
+    
+    document.getElementById('timeout-screen').style.display = 'flex';
+    document.getElementById('timeout-path-visualizer').innerHTML = '';
+    state.path.forEach(video => {
+        document.getElementById('timeout-path-visualizer').appendChild(createMiniCard(video));
+    });
+}
+
+async function loadDailyChallenge() {
+    const btn = document.getElementById('daily-btn');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '⏳ Cargando...';
+    btn.disabled = true;
+    try {
+        const res = await fetch('/api/daily');
+        if (!res.ok) throw new Error('No hay reto diario hoy');
+        const data = await res.json();
+        
+        selectVideo(data.start, 'start');
+        selectVideo(data.target, 'target');
+        
+        // Forzar modo libre para reto diario o el que esté seleccionado, pero lo dejamos que siga
+        setTimeout(() => {
+            startGame();
+        }, 500);
+    } catch (e) {
+        alert(e.message || 'Error al cargar reto diario');
+        btn.innerHTML = oldText;
+        btn.disabled = false;
+    }
 }

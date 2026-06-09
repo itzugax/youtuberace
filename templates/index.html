@@ -61,9 +61,22 @@
                     </div>
 
                     <div class="action-row">
-                        <button id="random-btn" class="btn-secondary">🎲 Aleatorio</button>
-                        <button id="start-game-btn" class="btn-primary" disabled>¡EMPEZAR!</button>
+                        <button id="random-btn" class="btn-secondary" style="width: 100%;">🎲 Aleatorio (Ambos)</button>
                     </div>
+
+                    <div class="game-modes" style="margin-top: 1.5rem; text-align: left;">
+                        <label for="time-limit" style="font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em;">⏱️ Modo de juego</label>
+                        <select id="time-limit" style="width: 100%; padding: 0.8rem; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-family: inherit; border-radius: var(--radius-sm); font-size: 0.9rem; margin-bottom: 1rem;">
+                            <option value="0">Modo Libre (Sin límite)</option>
+                            <option value="60">Contrarreloj (1 Minuto)</option>
+                            <option value="180">Contrarreloj (3 Minutos)</option>
+                            <option value="300">Contrarreloj (5 Minutos)</option>
+                            <option value="600">Contrarreloj (10 Minutos)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="start-game-btn" class="btn-primary" disabled style="width: 100%;">¡EMPEZAR PARTIDA!</button>
+                    <button id="daily-btn" class="btn-secondary" style="width: 100%; margin-top: 0.5rem; border-color: #ffd600; color: #ffd600;" onclick="loadDailyChallenge()">🌟 JUGAR RETO DIARIO 🌟</button>
                 </div>
 
                 <div class="how-to-play">
@@ -174,6 +187,40 @@
                         <div id="win-path-visualizer" class="path-visualizer"></div>
                     </div>
                     <button onclick="window.location.href = '/'" class="btn-primary">JUGAR OTRA VEZ</button>
+                </div>
+            </main>
+
+            <!-- PANTALLA DE PÉRDIDA POR TIEMPO -->
+            <main id="timeout-screen" style="display: none;">
+                <div class="end-container surrender" style="border-color: var(--accent-red);">
+                    <div class="end-icon">⏰</div>
+                    <h1 style="color: var(--accent-red);">Se acabó el tiempo</h1>
+                    <p class="end-subtitle">Llegaste a <strong id="timeout-hops" class="highlight">0</strong> saltos pero el reloj llegó a cero.</p>
+
+                    <div class="surrender-endpoints">
+                        <div class="surrender-endpoint">
+                            <span class="endpoint-label">🚀 INICIO</span>
+                            <div class="endpoint-card">
+                                <img id="timeout-start-thumb" src="">
+                                <div id="timeout-start-title" class="endpoint-title"></div>
+                            </div>
+                        </div>
+                        <div class="surrender-arrow">→</div>
+                        <div class="surrender-endpoint">
+                            <span class="endpoint-label">🎯 META</span>
+                            <div class="endpoint-card">
+                                <img id="timeout-target-thumb" src="">
+                                <div id="timeout-target-title" class="endpoint-title"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="final-path">
+                        <h3>Tu recorrido hasta perder:</h3>
+                        <div id="timeout-path-visualizer" class="path-visualizer path-visualizer-end"></div>
+                    </div>
+
+                    <button onclick="window.location.href = '/'" class="btn-primary">INTENTAR DE NUEVO</button>
                 </div>
             </main>
 
