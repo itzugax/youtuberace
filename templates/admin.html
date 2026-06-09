@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - YouTube Wiki Race</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .admin-card { background: var(--card-bg); padding: 2rem; border: 1px solid var(--border-color); border-radius: var(--radius-lg); width: 100%; max-width: 500px; text-align: center; }
+        .admin-card h1 { margin-bottom: 1.5rem; font-size: 1.5rem; }
+        .admin-group { text-align: left; margin-bottom: 1rem; }
+        .admin-group label { display: block; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .admin-group input { width: 100%; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-family: inherit; }
+        .admin-card .btn-primary { width: 100%; margin-top: 1rem; }
+        #message { margin-top: 1rem; font-size: 0.9rem; font-weight: bold; }
+        .success { color: #00e676; }
+        .error { color: var(--accent-red); }
+    </style>
+</head>
+<body>
+    <div class="admin-card" id="login-section">
+        <h1>🔒 Acceso Admin</h1>
+        <div class="admin-group">
+            <label>Contraseña</label>
+            <input type="password" id="admin-pass" placeholder="***">
+        </div>
+        <button class="btn-primary" onclick="login()">Ingresar</button>
+        <div id="login-msg" class="error"></div>
+    </div>
+
+    <div class="admin-card" id="panel-section" style="display: none;">
+        <h1>👑 Panel de Control</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">Configura el reto diario. Pega los IDs de los videos de YouTube.</p>
+        
+        <div class="admin-group">
+            <label>ID Video Inicio</label>
+            <input type="text" id="start-id" placeholder="Ej: dQw4w9WgXcQ">
+        </div>
+        <div class="admin-group">
+            <label>ID Video Meta</label>
+            <input type="text" id="target-id" placeholder="Ej: jNQXAC9IVRw">
+        </div>
+        <button class="btn-primary" onclick="saveDaily()">Guardar Reto Diario</button>
+        <button class="btn-secondary" style="width:100%; margin-top:0.5rem" onclick="window.location.href='/'">Volver al Juego</button>
+        <div id="panel-msg"></div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('admin_token');
+        if (token) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('panel-section').style.display = 'block';
+        }
+
+        async function login() {
+            const pwd = document.getElementById('admin-pass').value;
+            const res = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ password: pwd })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                token = data.token;
+                localStorage.setItem('admin_token', token);
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('panel-section').style.display = 'block';
+            } else {
+                document.getElementById('login-msg').textContent = 'Contraseña incorrecta';
+            }
+        }
+
+        async function saveDaily() {
+            if (!token) return;
+            const startId = document.getElementById('start-id').value.trim();
+            const targetId = document.getElementById('target-id').value.trim();
+            const msg = document.getElementById('panel-msg');
+            msg.textContent = 'Guardando...';
+            msg.className = '';
+
+            const res = await fetch('/api/admin/daily', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ start_id: startId, target_id: targetId })
+            });
+            
+            if (res.ok) {
+                msg.textContent = '¡Reto diario guardado con éxito!';
+                msg.className = 'success';
+            } else {
+                msg.textContent = 'Error al guardar. Revisa tu token o DB.';
+                msg.className = 'error';
+                if (res.status === 401) {
+                    localStorage.removeItem('admin_token');
+                    location.reload();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
