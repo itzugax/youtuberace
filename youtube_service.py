@@ -166,21 +166,18 @@ def _parse_recommendations(data: dict, current_video_id: str):
 async def get_video_info(video_id: str):
     """Obtiene info de un video por su ID (para cargar semillas desde URL)."""
     try:
-        from youtubesearchpython import Video
-        info = Video.getInfo(f"https://www.youtube.com/watch?v={video_id}")
-        if not info:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res = await client.get(f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json")
+            if res.status_code == 200:
+                data = res.json()
+                return {
+                    "id": video_id,
+                    "title": data.get("title", ""),
+                    "channel": data.get("author_name", ""),
+                    "thumb": data.get("thumbnail_url", f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"),
+                    "date": ""
+                }
             return None
-        thumb = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
-        thumbnails = info.get("thumbnails", [])
-        if thumbnails:
-            thumb = thumbnails[-1].get("url", thumb)
-        return {
-            "id": video_id,
-            "title": info.get("title", ""),
-            "channel": info.get("channel", {}).get("name", ""),
-            "thumb": thumb,
-            "date": info.get("publishedTime", "")
-        }
     except Exception as e:
         print(f"Error getting video info for {video_id}: {e}")
         return None
