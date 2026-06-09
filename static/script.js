@@ -16,7 +16,41 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('random-btn').addEventListener('click', loadRandomVideos);
     document.getElementById('start-game-btn').addEventListener('click', startGame);
+
+    // Load seed from URL if present
+    loadFromSeedURL();
 });
+
+async function loadFromSeedURL() {
+    const params = new URLSearchParams(window.location.search);
+    const startId = params.get('s');
+    const targetId = params.get('t');
+    if (!startId || !targetId) return;
+
+    try {
+        const [startRes, targetRes] = await Promise.all([
+            fetch(`/api/video?id=${encodeURIComponent(startId)}`),
+            fetch(`/api/video?id=${encodeURIComponent(targetId)}`)
+        ]);
+        if (!startRes.ok || !targetRes.ok) return;
+        const startVideo = await startRes.json();
+        const targetVideo = await targetRes.json();
+        if (startVideo && targetVideo) {
+            selectVideo(startVideo, 'start');
+            selectVideo(targetVideo, 'target');
+        }
+    } catch (e) {
+        console.warn('Could not load seed from URL:', e);
+    }
+}
+
+function updateSeedURL() {
+    if (!state.start || !state.target) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('s', state.start.id);
+    url.searchParams.set('t', state.target.id);
+    window.history.replaceState({}, '', url.toString());
+}
 
 // Autocomplete and selection logic...
 function setupAutocomplete(type) {
@@ -94,6 +128,7 @@ function selectVideo(video, type) {
     selectedEl.style.display = 'flex';
 
     checkReady();
+    updateSeedURL();
 }
 
 window.clearSelection = function(type) {

@@ -21,6 +21,13 @@ async def autocomplete(q: str):
     results = await youtube_service.search_videos(q)
     return results
 
+@app.get("/api/video")
+async def get_video_info(id: str):
+    info = await youtube_service.get_video_info(id)
+    if not info:
+        raise HTTPException(status_code=404, detail="Video not found")
+    return info
+
 @app.get("/api/random")
 async def get_random():
     for _ in range(3):  # retry up to 3 times
