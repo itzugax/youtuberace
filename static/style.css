@@ -362,7 +362,7 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     align-items: flex-start;
     animation: fadeIn 0.5s ease-out;
 }
-.main-column { flex: 0 0 520px; min-width: 0; max-width: 520px; }
+.main-column { flex: 0 0 580px; min-width: 0; max-width: 580px; }
 .side-column {
     flex: 0 0 280px;
     width: 280px;

@@ -234,7 +234,7 @@ async function loadRecommendations(video) {
                 <img src="${video.thumb}" alt="thumb" class="video-thumb">
                 <div class="video-info">
                     <div class="video-title" title="${video.title}">${video.title}</div>
-                    <div class="video-channel">${video.channel}</div>
+                    <div class="video-channel">${video.channel}${video.date ? ' · ' + video.date : ''}</div>
                 </div>
             `;
             card.style.animation = `fadeIn 0.4s ease-out ${index * 0.04}s both`;
